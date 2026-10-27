@@ -1,0 +1,22 @@
+<!--
+  Paste this into any page on your existing website (WordPress "Custom HTML" block,
+  Squarespace/Wix "Embed code" block, or your own templates).
+  Replace https://tax.example.com/ with the address where you deployed the calculator.
+  If that address is a different domain from your site, add your site's domain to
+  frame-ancestors in netlify.toml / nginx.conf, e.g.  frame-ancestors 'self' https://www.yoursite.co.uk
+-->
+<iframe
+  id="uk-tax-calc"
+  src="https://tax.example.com/"
+  title="UK Take-Home Calculator"
+  style="width:100%;border:0;min-height:900px;display:block"
+  loading="lazy"></iframe>
+<script>
+  // Grows the iframe to fit the calculator so there is no inner scrollbar.
+  window.addEventListener("message", function (e) {
+    if (e.origin !== new URL(document.getElementById("uk-tax-calc").src).origin) return;
+    if (e.data && e.data.type === "uk-tax-calc:height") {
+      document.getElementById("uk-tax-calc").style.height = e.data.height + "px";
+    }
+  });
+</script>

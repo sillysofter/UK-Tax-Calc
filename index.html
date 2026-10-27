@@ -1,0 +1,159 @@
+<!doctype html>
+<html lang="en-GB">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>UK Take-Home Calculator</title>
+<meta name="description" content="Free 2026/27 UK salary calculator: income tax by band, National Insurance, student loans, the Child Benefit charge, lost childcare support, your effective tax rate and total net loss.">
+<meta property="og:title" content="UK Take-Home Calculator">
+<meta property="og:description" content="See every deduction and every benefit you lose on a UK salary, with your total tax rate.">
+<meta property="og:type" content="website">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='7' fill='%231d6b52'/%3E%3Ctext x='16' y='23' font-size='20' text-anchor='middle' fill='white' font-family='Arial' font-weight='bold'%3E%C2%A3%3C/text%3E%3C/svg%3E">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,500;12..96,700&family=Atkinson+Hyperlegible:wght@400;700&family=JetBrains+Mono:wght@400;600&display=swap">
+<link rel="stylesheet" href="css/styles.css">
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <div class="eyebrow">Tax year 6 April 2026 – 5 April 2027</div>
+    <h1>UK Take-Home Calculator</h1>
+    <p>Enter a salary to see every deduction, every allowance and benefit that tapers away, your effective tax rate and the total you lose.</p>
+  </header>
+
+  <div class="grid">
+    <form class="panel" id="form" autocomplete="off">
+      <div class="field">
+        <label for="salary">Gross annual salary</label>
+        <div class="salary-box"><span>£</span><input id="salary" type="number" inputmode="numeric" min="0" step="1000" value="110000"></div>
+        <div class="chips" id="presets">
+          <button type="button" data-v="25000">25k</button>
+          <button type="button" data-v="45000">45k</button>
+          <button type="button" data-v="60000">60k</button>
+          <button type="button" data-v="80000">80k</button>
+          <button type="button" data-v="100000">100k</button>
+          <button type="button" data-v="125140">125,140</button>
+          <button type="button" data-v="200000">200k</button>
+        </div>
+      </div>
+
+      <div class="row2">
+        <div class="field">
+          <label for="region">Where you live</label>
+          <select id="region">
+            <option value="eng">England</option>
+            <option value="wal">Wales</option>
+            <option value="ni">Northern Ireland</option>
+            <option value="sco">Scotland</option>
+          </select>
+        </div>
+        <div class="field">
+          <label for="pension">Pension (salary sacrifice)</label>
+          <div style="display:flex;align-items:center;gap:6px"><input id="pension" type="number" min="0" max="100" step="1" value="5"><span class="hint">%</span></div>
+        </div>
+      </div>
+
+      <div class="row2">
+        <div class="field">
+          <label for="loan">Student loan</label>
+          <select id="loan">
+            <option value="none">None</option>
+            <option value="p1">Plan 1</option>
+            <option value="p2" selected>Plan 2</option>
+            <option value="p4">Plan 4 (Scotland)</option>
+            <option value="p5">Plan 5</option>
+          </select>
+        </div>
+        <div class="field">
+          <span class="legend">Postgraduate loan</span>
+          <label class="check" for="pgl"><input id="pgl" type="checkbox"> Repaying one</label>
+        </div>
+      </div>
+
+      <fieldset>
+        <legend>Family</legend>
+        <div class="row2">
+          <div class="field">
+            <label for="kids">Children claiming Child Benefit</label>
+            <input id="kids" type="number" min="0" max="12" step="1" value="2">
+          </div>
+          <div class="field">
+            <label for="tfc">Children using Tax-Free Childcare</label>
+            <input id="tfc" type="number" min="0" max="12" step="1" value="1">
+          </div>
+        </div>
+        <div class="row2">
+          <div class="field">
+            <label for="hours">Children getting 30 funded hours</label>
+            <input id="hours" type="number" min="0" max="12" step="1" value="1">
+          </div>
+          <div class="field">
+            <label for="hoursVal">Value per child, per year (£)</label>
+            <input id="hoursVal" type="number" min="0" step="100" value="7000">
+          </div>
+        </div>
+        <label class="check" for="marriage"><input id="marriage" type="checkbox"> My spouse or civil partner transfers their Marriage Allowance to me</label>
+      </fieldset>
+
+      <div class="example-tag" id="exampleTag">Example figures loaded. Change any field to use your own.</div>
+    </form>
+
+    <section class="results" aria-live="polite">
+      <div class="headline">
+        <div class="stat keep"><span class="k">Take-home pay</span><span class="v" id="hTake">–</span><span class="s" id="hTakeM">–</span></div>
+        <div class="stat taxrate"><span class="k">Total tax rate</span><span class="v" id="hRate">–</span><span class="s" id="hRateS">–</span></div>
+        <div class="stat loss"><span class="k">Total net loss</span><span class="v" id="hLoss">–</span><span class="s" id="hLossS">–</span></div>
+        <div class="stat"><span class="k">Marginal rate</span><span class="v" id="hMarg">–</span><span class="s" id="hMargS">–</span></div>
+      </div>
+
+      <div class="card">
+        <div class="card-head"><h2>Where your gross pay goes</h2><p class="hint" id="barCaption"></p></div>
+        <div class="bar" id="bar" role="img" aria-label="Breakdown of gross pay"></div>
+        <div class="legend-row" id="barLegend"></div>
+      </div>
+
+      <div class="card">
+        <div class="card-head"><h2>Deductions</h2><p class="hint">Annual, monthly and as a share of gross salary</p></div>
+        <div class="table-scroll">
+          <table>
+            <thead><tr><th>Item</th><th class="n">Year</th><th class="n">Month</th><th class="n">% gross</th></tr></thead>
+            <tbody id="dedBody"></tbody>
+          </table>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="card-head"><h2>Income tax by band</h2><p class="hint" id="bandCaption"></p></div>
+        <div class="table-scroll">
+          <table>
+            <thead><tr><th>Band</th><th class="n">Rate</th><th class="n">Income in band</th><th class="n">Tax</th></tr></thead>
+            <tbody id="bandBody"></tbody>
+          </table>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="card-head"><h2>Allowances and benefits you lose</h2><p class="hint">Highlighted items apply at this income</p></div>
+        <div class="losses" id="losses"></div>
+      </div>
+
+      <div class="card" id="tipsCard">
+        <h2>Thresholds near you</h2>
+        <div class="tips" id="tips"></div>
+      </div>
+
+      <div class="notes">
+        <p>Rates used: Personal Allowance £12,570, tapered by £1 for every £2 of adjusted net income over £100,000. rUK bands 20% / 40% / 45%; Scottish bands 19% / 20% / 21% / 42% / 45% / 48% with starter and basic limits of £16,537 and £29,526. Employee National Insurance 8% from £12,570 to £50,270 and 2% above. Employer NI 15% above £5,000.</p>
+        <p>Student loans: 9% above £26,900 (Plan 1), £29,385 (Plan 2), £33,795 (Plan 4), £25,000 (Plan 5); postgraduate 6% above £21,000. Child Benefit £27.05 a week for the eldest and £17.90 for each other child; the High Income Child Benefit Charge claws back 1% per £200 of income over £60,000. Tax-Free Childcare is valued at its £2,000 per child maximum. Funded-hours value is your own estimate.</p>
+        <p>This assumes salary is your only income and that pension contributions are made by salary sacrifice. It ignores the employee NI on bonuses, benefits in kind, Universal Credit, and your partner's income (the Child Benefit charge and childcare limits look at whichever parent earns more). It is an estimate, not tax advice; check figures against GOV.UK before acting on them.</p>
+      </div>
+    </section>
+  </div>
+</div>
+
+<script src="js/rates.js"></script>
+<script src="js/calculator.js"></script>
+<script src="js/app.js"></script>
+</body>
+</html>
